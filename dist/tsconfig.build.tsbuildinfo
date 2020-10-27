@@ -5020,6 +5020,11 @@
         "signature": "8f1241f5d9f0d3d72117768b3c974e462840fbd85026fb66685078945404cf2f",
         "affectsGlobalScope": false
       },
+      "../src/restaurants/entities/restaurant.entity.ts": {
+        "version": "6593977ae96a7cafcab73256cf2c297932fb6ec2b2db39f8197252485ad4b6a1",
+        "signature": "56a2b20168ab860192c28e26c94a9db9525001c00d9a460fedef7832e204243c",
+        "affectsGlobalScope": false
+      },
       "../node_modules/class-validator/types/validation/ValidationError.d.ts": {
         "version": "d224f2ef464cf2a544dcf6be6b416db5563aa5ca4c94e2a1d93bf3765c1f77cb",
         "signature": "d224f2ef464cf2a544dcf6be6b416db5563aa5ca4c94e2a1d93bf3765c1f77cb",
@@ -5640,18 +5645,18 @@
         "signature": "ec8a39e1441b2e03c44e7d367799d139bb487ba9409ee5719df51421150d71db",
         "affectsGlobalScope": false
       },
-      "../src/restaurants/entities/restaurant.entity.ts": {
-        "version": "6593977ae96a7cafcab73256cf2c297932fb6ec2b2db39f8197252485ad4b6a1",
-        "signature": "56a2b20168ab860192c28e26c94a9db9525001c00d9a460fedef7832e204243c",
+      "../src/restaurants/restaurants.service.ts": {
+        "version": "cb46b24d1603ecdbdd1328aec2eab566e50b9d9f4ffca48eeefea6806f91bf77",
+        "signature": "c98613d595d198dff437cc6dd864ef5d70e2bb9556f361af26028195c1e90c7f",
         "affectsGlobalScope": false
       },
-      "../src/restaurants/restauants.resolver.ts": {
-        "version": "34d6a13dacd8b2adbfc05832fe3a32157af2722a26a48f68961dbfe16b5c0829",
-        "signature": "7102b9b8a254ddfc2b0f46ee54f663f14214564cb87d4de11ae5d69e5b4d74f8",
+      "../src/restaurants/restaurants.resolver.ts": {
+        "version": "039d4ff1c0a9eaff829d75ae46778456268c7636fea7a3efbfab951fc27ec78e",
+        "signature": "c6f80491e6b4463fe21c80f5b323681c3d21a94cb93dae51f30985c8806d2635",
         "affectsGlobalScope": false
       },
       "../src/restaurants/restaurants.module.ts": {
-        "version": "5bcb5e82a3ab7796ab5c1fd4cc8bfc327771c3c782988228f129fc266e47cada",
+        "version": "eaa6c2306bbed0c4797224f6041e580ee9a235341c1952b56c73d85918801ff6",
         "signature": "126108b45b72bbade3b5733fa6e1dbc34c5b76e6615d9ed0ba1c24ea9275fb35",
         "affectsGlobalScope": false
       },
@@ -10678,14 +10683,24 @@
         "../node_modules/@nestjs/graphql/index.d.ts",
         "../node_modules/typeorm/index.d.ts"
       ],
-      "../src/restaurants/restauants.resolver.ts": [
-        "../node_modules/@nestjs/graphql/index.d.ts",
-        "../src/restaurants/dtos/create-restaurant.dto.ts",
-        "../src/restaurants/entities/restaurant.entity.ts"
-      ],
       "../src/restaurants/restaurants.module.ts": [
         "../node_modules/@nestjs/common/index.d.ts",
-        "../src/restaurants/restauants.resolver.ts"
+        "../node_modules/@nestjs/typeorm/index.d.ts",
+        "../src/restaurants/entities/restaurant.entity.ts",
+        "../src/restaurants/restaurants.resolver.ts",
+        "../src/restaurants/restaurants.service.ts"
+      ],
+      "../src/restaurants/restaurants.resolver.ts": [
+        "../node_modules/@nestjs/graphql/index.d.ts",
+        "../src/restaurants/dtos/create-restaurant.dto.ts",
+        "../src/restaurants/entities/restaurant.entity.ts",
+        "../src/restaurants/restaurants.service.ts"
+      ],
+      "../src/restaurants/restaurants.service.ts": [
+        "../node_modules/@nestjs/common/index.d.ts",
+        "../node_modules/@nestjs/typeorm/index.d.ts",
+        "../node_modules/typeorm/index.d.ts",
+        "../src/restaurants/entities/restaurant.entity.ts"
       ]
     },
     "exportedModulesMap": {
@@ -15381,8 +15396,13 @@
       "../node_modules/zen-observable-ts/lib/zenObservable.d.ts": [
         "../node_modules/zen-observable-ts/lib/types.d.ts"
       ],
-      "../src/restaurants/restauants.resolver.ts": [
+      "../src/restaurants/restaurants.resolver.ts": [
         "../src/restaurants/dtos/create-restaurant.dto.ts",
+        "../src/restaurants/entities/restaurant.entity.ts",
+        "../src/restaurants/restaurants.service.ts"
+      ],
+      "../src/restaurants/restaurants.service.ts": [
+        "../node_modules/typeorm/index.d.ts",
         "../src/restaurants/entities/restaurant.entity.ts"
       ]
     },
@@ -16574,8 +16594,9 @@
       "../src/main.ts",
       "../src/restaurants/dtos/create-restaurant.dto.ts",
       "../src/restaurants/entities/restaurant.entity.ts",
-      "../src/restaurants/restauants.resolver.ts",
-      "../src/restaurants/restaurants.module.ts"
+      "../src/restaurants/restaurants.module.ts",
+      "../src/restaurants/restaurants.resolver.ts",
+      "../src/restaurants/restaurants.service.ts"
     ]
   },
   "version": "3.9.7"
