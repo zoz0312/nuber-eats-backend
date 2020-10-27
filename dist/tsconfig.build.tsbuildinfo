@@ -1161,6 +1161,11 @@
         "signature": "ceadf8ae9b705cdfa854ab0efc44d22509e8e2a0d9ff35206bde3a954e469f07",
         "affectsGlobalScope": false
       },
+      "../node_modules/joi/lib/index.d.ts": {
+        "version": "4068044a45ccae8c314485337305559035d1317a82809aa1c11a6eb8ece26273",
+        "signature": "4068044a45ccae8c314485337305559035d1317a82809aa1c11a6eb8ece26273",
+        "affectsGlobalScope": false
+      },
       "../node_modules/@nestjs/config/dist/types/config.type.d.ts": {
         "version": "839d15098cc51d756b67acda281788779645cbf8e95571897951afb52ea6535a",
         "signature": "839d15098cc51d756b67acda281788779645cbf8e95571897951afb52ea6535a",
@@ -5651,7 +5656,7 @@
         "affectsGlobalScope": false
       },
       "../src/app.module.ts": {
-        "version": "dee750ef32b3adfe0fc4e5ed912f08146ac0025b0bb167572323a3334616c416",
+        "version": "9fd4831e10e24a0420c2e6d942bd028dcd31b97c3833a06bea6d2793c9cfd9a1",
         "signature": "b82491e2990291580288c5602d4c017238977749d52b17391f0e45d9a29be644",
         "affectsGlobalScope": false
       },
@@ -10656,6 +10661,7 @@
         "../node_modules/@nestjs/config/index.d.ts",
         "../node_modules/@nestjs/graphql/index.d.ts",
         "../node_modules/@nestjs/typeorm/index.d.ts",
+        "../node_modules/joi/lib/index.d.ts",
         "../src/restaurants/restaurants.module.ts"
       ],
       "../src/main.ts": [
@@ -16197,6 +16203,7 @@
       "../node_modules/jest-diff/build/index.d.ts",
       "../node_modules/jest-diff/build/printDiffs.d.ts",
       "../node_modules/jest-diff/build/types.d.ts",
+      "../node_modules/joi/lib/index.d.ts",
       "../node_modules/pretty-format/build/index.d.ts",
       "../node_modules/pretty-format/build/types.d.ts",
       "../node_modules/reflect-metadata/index.d.ts",
