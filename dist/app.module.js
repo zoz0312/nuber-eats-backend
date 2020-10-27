@@ -13,6 +13,7 @@ const config_1 = require("@nestjs/config");
 const graphql_1 = require("@nestjs/graphql");
 const typeorm_1 = require("@nestjs/typeorm");
 const restaurants_module_1 = require("./restaurants/restaurants.module");
+const restaurant_entity_1 = require("./restaurants/entities/restaurant.entity");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -38,8 +39,9 @@ AppModule = __decorate([
                 username: process.env.DB_USERNAME,
                 database: process.env.DB_DATABASE,
                 password: process.env.DB_PASSWORD,
-                synchronize: true,
-                logging: true,
+                synchronize: process.env.NODE_ENV !== 'prod',
+                logging: process.env.NODE_ENV === 'dev',
+                entities: [restaurant_entity_1.Restaurant]
             }),
             graphql_1.GraphQLModule.forRoot({
                 autoSchemaFile: true,
