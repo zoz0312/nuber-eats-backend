@@ -6,6 +6,7 @@ import { CreateAccountInput, CreateAccountOutput } from "./dtos/create-account.d
 import { EditProfileInput, EditProfileOutput } from "./dtos/edit-profile.dto";
 import { LoginInput, LoginOutput } from "./dtos/login.dto";
 import { UserProfileInput, UserProfileOutput } from "./dtos/user-profile.dto";
+import { VerifyEmailInput, VerifyEmailOutput } from "./dtos/verify-email.dto";
 import { User } from "./entities/user.entity";
 import { UsersService } from "./users.service";
 
@@ -19,30 +20,14 @@ export class UsersResolver {
   async createAccount(
     @Args('input') createAccountInput: CreateAccountInput
   ): Promise<CreateAccountOutput> {
-    try {
-      const { ok, error } = await this.usersService.createAccount(createAccountInput);
-      return {
-        ok,
-        error,
-      };
-    } catch (error) {
-      return {
-        ok: false,
-        error,
-      };
-    }
+    return this.usersService.createAccount(createAccountInput);
   }
 
   @Mutation(returns => LoginOutput)
-  async login(@Args('input') loginInput: LoginInput): Promise<LoginOutput> {
-    try {
-      return this.usersService.login(loginInput);
-    } catch (error) {
-      return {
-        ok: false,
-        error,
-      }
-    }
+  async login(
+    @Args('input') loginInput: LoginInput
+  ): Promise<LoginOutput> {
+    return this.usersService.login(loginInput);
   }
 
   @Query(returns => User)
@@ -91,6 +76,13 @@ export class UsersResolver {
         error,
       }
     }
+  }
+
+  @Mutation(returns => VerifyEmailOutput)
+  async verifyEmail(
+    @Args('input') { code }: VerifyEmailInput,
+  ): Promise<VerifyEmailOutput> {
+    return this.usersService.verifyEmail(code);
   }
 }
 

@@ -1,5 +1,5 @@
 import { InputType, ObjectType, PartialType, PickType } from "@nestjs/graphql";
-import { RequestOutput } from "src/common/dtos/output.dto";
+import { CoreOutput } from "src/common/dtos/output.dto";
 import { User } from "../entities/user.entity";
 
 @InputType()
@@ -9,5 +9,5 @@ export class EditProfileInput extends PartialType(
 }
 
 @ObjectType()
-export class EditProfileOutput extends RequestOutput {
+export class EditProfileOutput extends CoreOutput {
 }
