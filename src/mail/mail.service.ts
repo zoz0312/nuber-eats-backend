@@ -18,7 +18,7 @@ export class MailService {
     template: string,
     emailValiables: EmailVariables[],
   ) {
-    /* TODO: mail server 열어서 mailgun과 동기화 시키기 
+    /* TODO: mail server 열어서 mailgun과 동기화 시키기
       후에 "to" User에게 전송
     */
     const base64Encoded = Buffer.from(`api:${this.options.apiKey}`).toString('base64');

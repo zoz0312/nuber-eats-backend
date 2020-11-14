@@ -20,8 +20,7 @@ export class UsersService {
     email,
     password,
     role,
-  }: CreateAccountInput): Promise<CreateAccountOutput>
-    {
+  }: CreateAccountInput): Promise<CreateAccountOutput> {
     try {
       const exists = await this.users.findOne({ email });
       if (exists) {
