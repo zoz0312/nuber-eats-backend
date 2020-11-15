@@ -12,12 +12,12 @@ export class MailService {
     // this.sendVerificationEmail('code', 'UserName');
   }
 
-  private async sendEmail(
+  async sendEmail(
     subject: string,
     to: string,
     template: string,
     emailValiables: EmailVariables[],
-  ) {
+  ): Promise<Boolean> {
     /* TODO: mail server 열어서 mailgun과 동기화 시키기
       후에 "to" User에게 전송
     */
@@ -30,16 +30,15 @@ export class MailService {
     emailValiables.forEach(eVar => form.append(`v:${eVar.key}`, eVar.value));
 
     try {
-      const response = await got(`https://api.mailgun.net/v3/${this.options.domain}/messages`,{
-        method: 'POST',
+      await got.post(`https://api.mailgun.net/v3/${this.options.domain}/messages`,{
         headers: {
           Authorization: `Basic ${base64Encoded}`,
         },
         body: form,
       });
-      console.log('response', response.body);
+      return true;
     } catch (e) {
-      console.log('mail error', e)
+      return false;
     }
   }
 
