@@ -41,22 +41,7 @@ export class UsersResolver {
   async userProfile(
     @Args() userProfileInput: UserProfileInput
   ): Promise<UserProfileOutput> {
-    try {
-      const user = await this.usersService.findById(userProfileInput.userId);
-      const ok = Boolean(user);
-      if (!ok) {
-        throw Error();
-      }
-      return {
-        ok,
-        user,
-      }
-    } catch (error) {
-      return {
-        ok: false,
-        error: 'User not found',
-      }
-    }
+    return this.usersService.findById(userProfileInput.userId);
   }
 
   @UseGuards(AuthGuard)
@@ -65,17 +50,7 @@ export class UsersResolver {
     @AuthUser() authUser: User,
     @Args('input') editProfileInput: EditProfileInput,
   ): Promise<EditProfileOutput> {
-    try {
-      await this.usersService.editProfile(authUser.id, editProfileInput);
-      return {
-        ok: true,
-      }
-    } catch (error) {
-      return {
-        ok: false,
-        error,
-      }
-    }
+    return await this.usersService.editProfile(authUser.id, editProfileInput);
   }
 
   @Mutation(returns => VerifyEmailOutput)
