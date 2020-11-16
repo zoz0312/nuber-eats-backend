@@ -2,7 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { getConnection } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
 jest.mock('got', () => {
   return {
@@ -18,7 +20,8 @@ const testUser = {
 
 describe('UserModule (e2e)', () => {
   let app: INestApplication;
-  let TOKEN: String;
+  let usersRepository: Repository<User>;
+  let TOKEN: string;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,6 +29,7 @@ describe('UserModule (e2e)', () => {
     }).compile();
 
     app = module.createNestApplication();
+    usersRepository = module.get<Repository<User>>(getRepositoryToken(User));
     await app.init();
   });
 
@@ -123,7 +127,63 @@ describe('UserModule (e2e)', () => {
     });
   });
 
-  it.todo('userProfile');
+  describe('userProfile', () => {
+    let userId: number;
+    beforeAll(async () => {
+      const [user] = await usersRepository.find();
+      userId = user.id;
+    });
+    it('should get userProfile', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set('X-JWT', TOKEN)
+        .send({
+          query: `
+            {
+              userProfile(userId: ${userId}) {
+                ok
+                error
+                user {
+                  id
+                }
+              }
+            }`,
+        })
+        .expect(200)
+        .expect(res => {
+          // { ok: true, error: null, user: { id: 1 } }
+          const { body: { data: { userProfile } } } = res;
+          expect(userProfile.ok).toBe(true);
+          expect(userProfile.error).toBe(null);
+          expect(userProfile.user.id).toEqual(userId);
+        });
+    });
+    it('should not get userProfile', () => {
+      return request(app.getHttpServer())
+      .post(GRAPHQL_ENDPOINT)
+      .set('X-JWT', TOKEN)
+      .send({
+        query: `
+          {
+            userProfile(userId: 33333333) {
+              ok
+              error
+              user {
+                id
+              }
+            }
+          }`,
+      })
+      .expect(200)
+      .expect(res => {
+        // { error: 'User Not Found', ok: false, user: null }
+        const { body: { data: { userProfile } } } = res;
+        expect(userProfile.ok).toBe(false);
+        expect(userProfile.error).toEqual(expect.any(String));
+        expect(userProfile.user).toBe(null);
+      });
+    });
+  });
   it.todo('me');
   it.todo('vertifyEmail');
   it.todo('editProfile');
