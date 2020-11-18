@@ -95,11 +95,11 @@ describe('UserModule (e2e)', () => {
       .expect(200)
       .expect(res => {
         // login { ok: true, error: null, token: String }
-        const { body: { data: { login } } } = res;
-        expect(login.ok).toBe(true);
-        expect(login.error).toBe(null);
-        expect(login.token).toEqual(expect.any(String));
-        TOKEN = login.token;
+        const { body: { data: { login: { ok, error, token } } } } = res;
+        expect(ok).toBe(true);
+        expect(error).toBe(null);
+        expect(token).toEqual(expect.any(String));
+        TOKEN = token;
       });
     });
     it('should not be able to login with wrong credentials', () => {
@@ -119,10 +119,10 @@ describe('UserModule (e2e)', () => {
       .expect(200)
       .expect(res => {
         // login { ok: false, error: 'Worng password', token: null }
-        const { body: { data: { login } } } = res;
-        expect(login.ok).toBe(false);
-        expect(login.error).toEqual(expect.any(String));
-        expect(login.token).toBe(null);
+        const { body: { data: { login: { ok, error, token } } } } = res;
+        expect(ok).toBe(false);
+        expect(error).toEqual(expect.any(String));
+        expect(token).toBe(null);
       });
     });
   });
@@ -152,10 +152,10 @@ describe('UserModule (e2e)', () => {
         .expect(200)
         .expect(res => {
           // { ok: true, error: null, user: { id: 1 } }
-          const { body: { data: { userProfile } } } = res;
-          expect(userProfile.ok).toBe(true);
-          expect(userProfile.error).toBe(null);
-          expect(userProfile.user.id).toEqual(userId);
+          const { body: { data: { userProfile: { ok, error, user: { id } } } } } = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+          expect(id).toEqual(userId);
         });
     });
     it('should not get userProfile', () => {
@@ -177,10 +177,10 @@ describe('UserModule (e2e)', () => {
       .expect(200)
       .expect(res => {
         // { error: 'User Not Found', ok: false, user: null }
-        const { body: { data: { userProfile } } } = res;
-        expect(userProfile.ok).toBe(false);
-        expect(userProfile.error).toEqual(expect.any(String));
-        expect(userProfile.user).toBe(null);
+        const { body: { data: { userProfile: { ok, error, user } } } } = res;
+        expect(ok).toBe(false);
+        expect(error).toEqual(expect.any(String));
+        expect(user).toBe(null);
       });
     });
   });
@@ -227,7 +227,47 @@ describe('UserModule (e2e)', () => {
   });
 
   describe('editProfile', () => {
-    
+    const CHANGE_EMAIL = 'changeTest@test.com';
+    it('should change email', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set('X-JWT', TOKEN)
+        .send({
+          query: `
+            mutation {
+              editProfile(input: {
+                email: "${CHANGE_EMAIL}",
+              }) {
+                ok
+                error
+              }
+            }`
+        })
+        .expect(200)
+        .expect(res => {
+          const { body: { data: { editProfile: { ok, error } } } } = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+        });
+    });
+    it('should have new email', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set('X-JWT', TOKEN)
+        .send({
+          query: `
+            {
+              me {
+                email
+              }
+            }`,
+        })
+        .expect(200)
+        .expect(res => {
+          const { body: { data: { me: { email } } } } = res;
+          expect(email).toBe(CHANGE_EMAIL);
+        });
+    })
   });
 
   it.todo('vertifyEmail');
