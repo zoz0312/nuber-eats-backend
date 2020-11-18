@@ -184,7 +184,51 @@ describe('UserModule (e2e)', () => {
       });
     });
   });
-  it.todo('me');
+
+  describe('me', () => {
+    it('should find my profile', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .set('X-JWT', TOKEN)
+        .send({
+          query: `
+            {
+              me {
+                email
+              }
+            }`,
+        })
+        .expect(200)
+        .expect(res => {
+          const { body: { data: { me } } } = res;
+          expect(me.email).toBe(testUser.EMAIL);
+        });
+    });
+
+    it('should not allow logged out user', () => {
+      return request(app.getHttpServer())
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: `
+            {
+              me {
+                email
+              }
+            }`,
+        })
+        .expect(200)
+        .expect(res => {
+          const { body: { data, errors } } = res;
+          const [error] = errors;
+          expect(data).toBe(null);
+          expect(error.message).toBe('Forbidden resource');
+        });
+    });
+  });
+
+  describe('editProfile', () => {
+    
+  });
+
   it.todo('vertifyEmail');
-  it.todo('editProfile');
 });
