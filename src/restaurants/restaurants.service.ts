@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/users/entities/user.entity";
 import { Repository } from "typeorm";
 import { CreateRestaurantInput, CreateRestaurantOutput } from "./dtos/create-restaurant.dto";
+import { DeleteRestaurantInput, DeleteRestaurantOutput } from "./dtos/delete-restaurant.dto";
 import { EditRestaurantInput, EditRestaurantOutput } from "./dtos/edit-restaurant.dto";
 import { Category } from "./entities/category.entity";
 import { Restaurant } from "./entities/restaurant.entity";
@@ -84,6 +85,43 @@ export class RestaurantService {
       return {
         ok: false,
         error: 'Could not edit Restaurant',
+      }
+    }
+  }
+
+  async deleteRestaurant(
+    ownser: User,
+    { restaurantId }: DeleteRestaurantInput,
+  ): Promise<DeleteRestaurantOutput> {
+    try {
+      const restaurant = await this.restaurants.findOne(
+        restaurantId
+      );
+
+      console.log('restaurant', restaurant)
+
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'Not found restaurant',
+        }
+      }
+
+      if (ownser.id !== restaurant.ownerId) {
+        return {
+          ok: false,
+          error: `You can't edit a restaurant that you don't own`,
+        }
+      }
+
+      await this.restaurants.softDelete(restaurantId);
+      return {
+        ok: true,
+      }
+    } catch (error) {
+      return {
+        ok: false,
+        error: 'Could not delete Restaurant',
       }
     }
   }
