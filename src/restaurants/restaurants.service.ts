@@ -11,15 +11,15 @@ import { RestaurantsInput, RestaurantsOutput } from "./dtos/restaurants.dto";
 import { Category } from "./entities/category.entity";
 import { Restaurant } from "./entities/restaurant.entity";
 import { CategoryRepository } from "./repositories/category.repository";
-import { FIXED_PAGE, PAGE_NATION, SKIP_PAGE, TOTAL_PAGES } from '../common/common.pagenation';
+import { PAGE_NATION, TOTAL_PAGES } from '../common/common.pagenation';
 import { RestaurantInput, RestaurantOutput } from "./dtos/restaurant.dto";
 import { SearchRestaurantInput, SearchRestaurantOutput } from "./dtos/search-restaurant.dto";
+import { RestaurantRepository } from "./repositories/restaurant.repository";
 
 @Injectable()
 export class RestaurantService {
   constructor(
-    @InjectRepository(Restaurant)
-    private readonly restaurants: Repository<Restaurant>,
+    private readonly restaurants: RestaurantRepository,
     private readonly categories: CategoryRepository,
   ) {}
 
@@ -161,12 +161,10 @@ export class RestaurantService {
         }
       }
 
-      const restaurants = await this.restaurants.find({
-        where: {
-          category,
-        },
-        ...PAGE_NATION(page),
-      });
+      const restaurants = await this.restaurants.findAllRestaurants(
+        page,
+        { category }
+      );
 
       category.restaurants = restaurants;
 
@@ -189,9 +187,8 @@ export class RestaurantService {
     { page }: RestaurantsInput,
   ): Promise<RestaurantsOutput> {
     try {
-      const [restaurants, totalResults] = await this.restaurants.findAndCount({
-        ...PAGE_NATION(page),
-      });
+      const [restaurants, totalResults] =
+        await this.restaurants.findAllRestaurantsCount(page, {});
 
       return {
         ok: true,
@@ -234,12 +231,11 @@ export class RestaurantService {
     { query, page }: SearchRestaurantInput,
   ): Promise<SearchRestaurantOutput> {
     try {
-      const [retaurants, totalResults] = await this.restaurants.findAndCount({
-        where: {
-          name: Raw(name => `${name} ILIKE '%${query}%'`)
-        },
-        ...PAGE_NATION(page),
-      });
+      const [retaurants, totalResults] =
+        await this.restaurants.findAllRestaurantsCount(
+          page,
+          { name: Raw(name => `${name} ILIKE '%${query}%'`) }
+        );
       return {
         ok: true,
         retaurants,
