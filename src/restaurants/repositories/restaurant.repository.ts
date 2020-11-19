@@ -1,6 +1,5 @@
 import { PAGE_NATION } from "src/common/common.pagenation";
 import { EntityRepository, Repository } from "typeorm";
-import { RestaurantInput } from "../dtos/restaurant.dto";
 import { Restaurant } from "../entities/restaurant.entity";
 
 @EntityRepository(Restaurant)
