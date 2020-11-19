@@ -7,9 +7,11 @@ import { CategoryInput, CategoryOutput } from "./dtos/category.dto";
 import { CreateRestaurantInput, CreateRestaurantOutput } from "./dtos/create-restaurant.dto";
 import { DeleteRestaurantInput, DeleteRestaurantOutput } from "./dtos/delete-restaurant.dto";
 import { EditRestaurantInput, EditRestaurantOutput } from "./dtos/edit-restaurant.dto";
+import { RestaurantsInput, RestaurantsOutput } from "./dtos/restaurants.dto";
 import { Category } from "./entities/category.entity";
 import { Restaurant } from "./entities/restaurant.entity";
 import { CategoryRepository } from "./repositories/category.repository";
+import { FIXED_PAGE, PAGE_NATION, SKIP_PAGE, TOTAL_PAGES } from '../common/common.pagenation';
 
 @Injectable()
 export class RestaurantService {
@@ -161,8 +163,7 @@ export class RestaurantService {
         where: {
           category,
         },
-        take: 25,
-        skip: (page - 1) * 25,
+        ...PAGE_NATION(page),
       });
 
       category.restaurants = restaurants;
@@ -172,12 +173,34 @@ export class RestaurantService {
       return {
         ok: true,
         category,
-        totalPages: Math.ceil(totalResult / 25),
+        totalPages: TOTAL_PAGES(totalResult),
       }
     } catch (error) {
       return {
         ok: false,
         error: 'Could not load category'
+      }
+    }
+  }
+
+  async allRestaurants(
+    { page }: RestaurantsInput,
+  ): Promise<RestaurantsOutput> {
+    try {
+      const [restaurants, totalResults] = await this.restaurants.findAndCount({
+        ...PAGE_NATION(page),
+      });
+      console.log('restaurants', restaurants)
+      return {
+        ok: true,
+        results: restaurants,
+        totalPages: TOTAL_PAGES(totalResults),
+        totalResults,
+      }
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not load restaurants'
       }
     }
   }
