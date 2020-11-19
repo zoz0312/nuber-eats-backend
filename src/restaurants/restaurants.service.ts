@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/users/entities/user.entity";
-import { Repository } from "typeorm";
+import { Like, Raw, Repository } from "typeorm";
 import { AllCategoriesOutput } from "./dtos/all-categories.dto";
 import { CategoryInput, CategoryOutput } from "./dtos/category.dto";
 import { CreateRestaurantInput, CreateRestaurantOutput } from "./dtos/create-restaurant.dto";
@@ -12,6 +12,8 @@ import { Category } from "./entities/category.entity";
 import { Restaurant } from "./entities/restaurant.entity";
 import { CategoryRepository } from "./repositories/category.repository";
 import { FIXED_PAGE, PAGE_NATION, SKIP_PAGE, TOTAL_PAGES } from '../common/common.pagenation';
+import { RestaurantInput, RestaurantOutput } from "./dtos/restaurant.dto";
+import { SearchRestaurantInput, SearchRestaurantOutput } from "./dtos/search-restaurant.dto";
 
 @Injectable()
 export class RestaurantService {
@@ -190,7 +192,7 @@ export class RestaurantService {
       const [restaurants, totalResults] = await this.restaurants.findAndCount({
         ...PAGE_NATION(page),
       });
-      console.log('restaurants', restaurants)
+
       return {
         ok: true,
         results: restaurants,
@@ -202,6 +204,53 @@ export class RestaurantService {
         ok: false,
         error: 'Could not load restaurants'
       }
+    }
+  }
+
+  async findRestaurantById(
+    { restaurantId }: RestaurantInput,
+  ): Promise<RestaurantOutput> {
+    try {
+      const restaurant = await this.restaurants.findOne(restaurantId);
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'Not found restaurant',
+        }
+      }
+      return {
+        ok: true,
+        restaurant,
+      }
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not find restaurant',
+      }
+    }
+  }
+
+  async searchRestaurantByName(
+    { query, page }: SearchRestaurantInput,
+  ): Promise<SearchRestaurantOutput> {
+    try {
+      const [retaurants, totalResults] = await this.restaurants.findAndCount({
+        where: {
+          name: Raw(name => `${name} ILIKE '%${query}%'`)
+        },
+        ...PAGE_NATION(page),
+      });
+      return {
+        ok: true,
+        retaurants,
+        totalResults,
+        totalPages: TOTAL_PAGES(totalResults),
+      }
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not find search restaurant',
+      };
     }
   }
 }
