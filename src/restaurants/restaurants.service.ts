@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/users/entities/user.entity";
 import { Repository } from "typeorm";
+import { AllCategoriesOutput } from "./dtos/all-categories.dto";
 import { CreateRestaurantInput, CreateRestaurantOutput } from "./dtos/create-restaurant.dto";
 import { DeleteRestaurantInput, DeleteRestaurantOutput } from "./dtos/delete-restaurant.dto";
 import { EditRestaurantInput, EditRestaurantOutput } from "./dtos/edit-restaurant.dto";
@@ -98,8 +99,6 @@ export class RestaurantService {
         restaurantId
       );
 
-      console.log('restaurant', restaurant)
-
       if (!restaurant) {
         return {
           ok: false,
@@ -122,6 +121,21 @@ export class RestaurantService {
       return {
         ok: false,
         error: 'Could not delete Restaurant',
+      }
+    }
+  }
+
+  async allCategories(): Promise<AllCategoriesOutput> {
+    try {
+      const categories = await this.categories.find();
+      return {
+        ok: true,
+        categories,
+      }
+    } catch (error) {
+      return {
+        ok: false,
+        error: 'Could not load categories',
       }
     }
   }
