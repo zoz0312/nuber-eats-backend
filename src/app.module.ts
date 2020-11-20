@@ -14,6 +14,8 @@ import { MailModule } from './mail/mail.module';
 import { Category } from './restaurants/entities/category.entity';
 import { AuthModule } from './auth/auth.module';
 import { Dish } from './restaurants/entities/dish.entity';
+import { OrdersModule } from './orders/orders.module';
+import { Order } from './orders/entities/order.entity';
 
 @Module({
   imports: [
@@ -49,6 +51,7 @@ import { Dish } from './restaurants/entities/dish.entity';
         Restaurant,
         Category,
         Dish,
+        Order,
       ],
     }),
     GraphQLModule.forRoot({
@@ -66,6 +69,7 @@ import { Dish } from './restaurants/entities/dish.entity';
     RestaurantsModule,
     UsersModule,
     AuthModule,
+    OrdersModule,
   ],
   controllers: [],
   providers: [],
