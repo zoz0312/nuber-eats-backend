@@ -49,8 +49,8 @@ export class Order extends CoreEntity {
   dishes: Dish[];
 
   @Field(type => Float)
-  @Column()
-  total: number;
+  @Column({ nullable: true })
+  total?: number;
 
   @Field(type => OrderStatus)
   @Column({ type: 'enum', enum: OrderStatus })
