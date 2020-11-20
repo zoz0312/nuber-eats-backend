@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { User } from "src/users/entities/user.entity";
-import { Raw } from "typeorm";
+import { Raw, Repository } from "typeorm";
 import { AllCategoriesOutput } from "./dtos/all-categories.dto";
 import { CategoryInput, CategoryOutput } from "./dtos/category.dto";
 import { CreateRestaurantInput, CreateRestaurantOutput } from "./dtos/create-restaurant.dto";
@@ -14,12 +14,17 @@ import { TOTAL_PAGES } from '../common/common.pagenation';
 import { RestaurantInput, RestaurantOutput } from "./dtos/restaurant.dto";
 import { SearchRestaurantInput, SearchRestaurantOutput } from "./dtos/search-restaurant.dto";
 import { RestaurantRepository } from "./repositories/restaurant.repository";
+import { CreateDishInput, CreateDishOutput } from "./dtos/create-dish.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Dish } from "./entities/dish.entity";
 
 @Injectable()
 export class RestaurantService {
   constructor(
     private readonly restaurants: RestaurantRepository,
     private readonly categories: CategoryRepository,
+    @InjectRepository(Dish)
+    private readonly dishes: Repository<Dish>,
   ) {}
 
   getAll(): Promise<Restaurant[]> {
@@ -207,7 +212,10 @@ export class RestaurantService {
     { restaurantId }: RestaurantInput,
   ): Promise<RestaurantOutput> {
     try {
-      const restaurant = await this.restaurants.findOne(restaurantId);
+      const restaurant = await this.restaurants.findOne(
+        restaurantId,
+        { relations: ['menu'] },
+      );
       if (!restaurant) {
         return {
           ok: false,
@@ -246,6 +254,45 @@ export class RestaurantService {
         ok: false,
         error: 'Could not find search restaurant',
       };
+    }
+  }
+
+  async createDish(
+    owner: User,
+    createDishInput: CreateDishInput,
+  ): Promise<CreateDishOutput> {
+    try {
+      const restaurant = await this.restaurants.findOne(
+        createDishInput.restaurantId
+      );
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'Restaurant not found',
+        };
+      }
+      if (owner.id !== restaurant.ownerId) {
+        return {
+          ok: false,
+          error: `You don't have permission`,
+        }
+      }
+
+      await this.dishes.save(
+        this.dishes.create({
+          restaurant,
+          ...createDishInput,
+        })
+      );
+
+      return {
+        ok: true,
+      }
+    } catch (error) {
+      return {
+        ok: false,
+        error: 'Could not create dish',
+      }
     }
   }
 }
