@@ -235,9 +235,9 @@ export class OrderService {
       }
 
       let canEdit = false;
-      if (user.role === UserRole.Client) {
-        canEdit = false;
-      }
+      // if (user.role === UserRole.Client) {
+      //   canEdit = false;
+      // }
 
       if (user.role === UserRole.Owner) {
         if (status === OrderStatus.Cooking
