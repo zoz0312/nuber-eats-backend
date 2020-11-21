@@ -5,10 +5,11 @@ import { RestaurantRepository } from "src/restaurants/repositories/restaurant.re
 import { User, UserRole } from "src/users/entities/user.entity";
 import { Repository } from "typeorm";
 import { CreateOrderInput, CreateOrderOutput } from "./dtos/create-order.dto";
+import { EditOrderInput, EditOrderOutput } from "./dtos/edit-order.dto";
 import { GetOrderInput, GetOrderOutput } from "./dtos/get-order.dto";
 import { GetOrdersInput, GetOrdersOutput } from "./dtos/get-orders.dto";
 import { OrderItem } from "./entities/order-item.entity";
-import { Order } from "./entities/order.entity";
+import { Order, OrderStatus } from "./entities/order.entity";
 
 @Injectable()
 export class OrderService {
@@ -145,6 +146,34 @@ export class OrderService {
     }
   }
 
+  userPermissionChecker(
+    { role, id: userId }: User,
+    order: Order,
+  ): boolean {
+    let isCanSee = true;
+    if (
+      role === UserRole.Client
+      && order.customerId !== userId
+    ) {
+      isCanSee = false;
+    }
+
+    if (
+      role === UserRole.Delivery
+      && order.driverId !== userId
+    ) {
+      isCanSee = false;
+    }
+
+    if (
+      role === UserRole.Owner
+      && order.restaurant.ownerId !== userId
+    ) {
+      isCanSee = false;
+    }
+    return isCanSee;
+  }
+
   async getOrder(
     user: User,
     { id: orderId }: GetOrderInput,
@@ -161,35 +190,10 @@ export class OrderService {
         }
       }
 
-      const { id: userId } = user;
-      const permissionMessage = `You don't have permission`;
-      if (
-        user.role === UserRole.Client
-        && order.customerId !== userId
-      ) {
+      if (!this.userPermissionChecker(user, order)) {
         return {
           ok: false,
-          error: permissionMessage,
-        }
-      }
-
-      if (
-        user.role === UserRole.Delivery
-        && order.driverId !== userId
-      ) {
-        return {
-          ok: false,
-          error: permissionMessage,
-        }
-      }
-
-      if (
-        user.role === UserRole.Owner
-        && order.restaurant.ownerId !== userId
-      ) {
-        return {
-          ok: false,
-          error: permissionMessage,
+          error: `You don't have permission`
         }
       }
 
@@ -202,6 +206,74 @@ export class OrderService {
       return {
         ok: false,
         error: `Could not load order`,
+      }
+    }
+  }
+
+  async editOrder(
+    user: User,
+    { id: orderId, status }: EditOrderInput,
+  ): Promise<EditOrderOutput> {
+    try {
+      const order = await this.orders.findOne(
+        orderId,
+        { relations: ['restaurant'] }
+      );
+
+      if (!order) {
+        return {
+          ok: false,
+          error: `Order not found`
+        }
+      }
+
+      if (!this.userPermissionChecker(user, order)) {
+        return {
+          ok: false,
+          error: `You don't have permission`
+        }
+      }
+
+      let canEdit = false;
+      if (user.role === UserRole.Client) {
+        canEdit = false;
+      }
+
+      if (user.role === UserRole.Owner) {
+        if (status === OrderStatus.Cooking
+          || status === OrderStatus.Cooked
+        ) {
+          canEdit = true;
+        }
+      }
+
+      if (user.role === UserRole.Delivery) {
+        if (status === OrderStatus.PickedUp
+          || status === OrderStatus.Delivered
+        ) {
+          canEdit = true;
+        }
+      }
+
+      if (!canEdit) {
+        return {
+          ok: false,
+          error: `You can't edit`
+        }
+      }
+
+      await this.orders.save([{
+        id: orderId,
+        status,
+      }]);
+
+      return {
+        ok: true,
+      }
+    } catch {
+      return {
+        ok: false,
+        error: `Could not found order`
       }
     }
   }
