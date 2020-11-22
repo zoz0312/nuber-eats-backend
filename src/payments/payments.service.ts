@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common";
+import { Cron, Interval, SchedulerRegistry } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import { RestaurantRepository } from "src/restaurants/repositories/restaurant.repository";
 import { User } from "src/users/entities/user.entity";
-import { Repository } from "typeorm";
+import { LessThan, Repository } from "typeorm";
 import { CreatePaymentInput, CreatePaymentOutput } from "./dtos/create-payment.dto";
 import { GetPaymentOutput } from "./dtos/get-payment.dto";
 import { Payment } from "./entities/payment.entity";
@@ -12,7 +13,7 @@ export class PaymentService {
   constructor (
     @InjectRepository(Payment)
     private readonly payments: Repository<Payment>,
-    private readonly restairamts: RestaurantRepository,
+    private readonly restaurants: RestaurantRepository,
   ) {}
 
   async createPayment(
@@ -20,7 +21,7 @@ export class PaymentService {
     { transactionId, restaurantId }: CreatePaymentInput,
   ): Promise<CreatePaymentOutput> {
     try {
-      const restaurant = await this.restairamts.findOne(restaurantId);
+      const restaurant = await this.restaurants.findOne(restaurantId);
       if (!restaurant) {
         return {
           ok: false,
@@ -33,6 +34,12 @@ export class PaymentService {
           error: `You are not allowed to do this`
         }
       }
+
+      const date = new Date();
+      date.setDate(date.getDate() + 7);
+      restaurant.isPromoted = true;
+      restaurant.promitedUntil = date;
+      this.restaurants.save(restaurant);
 
       await this.payments.save(
         this.payments.create({
@@ -68,5 +75,18 @@ export class PaymentService {
         error: `Could not get payment`,
       }
     }
+  }
+
+  @Interval(2000)
+  async checkPromotedRestaurants() {
+    const restaurants = await this.restaurants.find({
+      isPromoted: true,
+      promitedUntil: LessThan(new Date()),
+    });
+    restaurants.forEach(async restaurant => {
+      restaurant.isPromoted = false;
+      restaurant.promitedUntil = null;
+      await this.restaurants.save(restaurant);
+    })
   }
 }

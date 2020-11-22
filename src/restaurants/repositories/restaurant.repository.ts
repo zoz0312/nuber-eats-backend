@@ -11,6 +11,9 @@ export class RestaurantRepository extends Repository<Restaurant> {
     return await this.find({
       where,
       ...PAGE_NATION(page),
+      order: {
+        isPromoted: 'DESC',
+      }
     });
   };
 
@@ -21,6 +24,9 @@ export class RestaurantRepository extends Repository<Restaurant> {
     return await this.findAndCount({
       where,
       ...PAGE_NATION(page),
+      order: {
+        isPromoted: 'DESC',
+      }
     });
   }
 }
