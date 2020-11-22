@@ -4,13 +4,14 @@ import { RestaurantRepository } from "src/restaurants/repositories/restaurant.re
 import { User } from "src/users/entities/user.entity";
 import { Repository } from "typeorm";
 import { CreatePaymentInput, CreatePaymentOutput } from "./dtos/create-payment.dto";
+import { GetPaymentOutput } from "./dtos/get-payment.dto";
 import { Payment } from "./entities/payment.entity";
 
 @Injectable()
 export class PaymentService {
   constructor (
     @InjectRepository(Payment)
-    private readonly payment: Repository<Payment>,
+    private readonly payments: Repository<Payment>,
     private readonly restairamts: RestaurantRepository,
   ) {}
 
@@ -33,8 +34,8 @@ export class PaymentService {
         }
       }
 
-      await this.payment.save(
-        this.payment.create({
+      await this.payments.save(
+        this.payments.create({
           transactionId,
           user: owner,
           restaurant,
@@ -48,6 +49,23 @@ export class PaymentService {
       return {
         ok: false,
         error: `Could not create payment`,
+      }
+    }
+  }
+
+  async getPayment (
+    owner: User,
+  ): Promise<GetPaymentOutput> {
+    try {
+      const payments = await this.payments.find({ user: owner });
+      return {
+        ok: true,
+        payments,
+      }
+    } catch (error) {
+      return {
+        ok: false,
+        error: `Could not get payment`,
       }
     }
   }
