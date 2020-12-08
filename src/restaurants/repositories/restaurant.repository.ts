@@ -21,9 +21,10 @@ export class RestaurantRepository extends Repository<Restaurant> {
     page: number,
     where: Object,
   ):Promise<[Restaurant[], number]> {
+    console.log('PAGE_NATION(page, 3)', PAGE_NATION(page, 3))
     return await this.findAndCount({
       where,
-      ...PAGE_NATION(page),
+      ...PAGE_NATION(page, 3),
       order: {
         isPromoted: 'DESC',
       }

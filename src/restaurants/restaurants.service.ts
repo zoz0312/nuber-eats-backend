@@ -200,7 +200,7 @@ export class RestaurantService {
       return {
         ok: true,
         results: restaurants,
-        totalPages: TOTAL_PAGES(totalResults),
+        totalPages: TOTAL_PAGES(totalResults, 3),
         totalResults,
       }
     } catch {
@@ -250,7 +250,7 @@ export class RestaurantService {
         ok: true,
         retaurants,
         totalResults,
-        totalPages: TOTAL_PAGES(totalResults),
+        totalPages: TOTAL_PAGES(totalResults, 3),
       }
     } catch {
       return {
