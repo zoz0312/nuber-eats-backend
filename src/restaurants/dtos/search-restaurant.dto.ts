@@ -11,5 +11,5 @@ export class SearchRestaurantInput extends PagenationInput {
 @ObjectType()
 export class SearchRestaurantOutput extends PagenationOutput {
   @Field(type => [Restaurant], { nullable: true })
-  retaurants?: Restaurant[];
+  restaurants?: Restaurant[];
 }

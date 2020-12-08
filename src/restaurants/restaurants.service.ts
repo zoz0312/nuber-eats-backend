@@ -175,12 +175,14 @@ export class RestaurantService {
 
       category.restaurants = restaurants;
 
-      const totalResult = await this.countRestaurants(category);
+      const totalResults = await this.countRestaurants(category);
 
       return {
         ok: true,
         category,
-        totalPages: TOTAL_PAGES(totalResult),
+        restaurants,
+        totalPages: TOTAL_PAGES(totalResults, 6),
+        totalResults,
       }
     } catch (error) {
       return {
@@ -241,14 +243,14 @@ export class RestaurantService {
     { query, page }: SearchRestaurantInput,
   ): Promise<SearchRestaurantOutput> {
     try {
-      const [retaurants, totalResults] =
+      const [restaurants, totalResults] =
         await this.restaurants.findAllRestaurantsCount(
           page,
           { name: Raw(name => `${name} ILIKE '%${query}%'`) }
         );
       return {
         ok: true,
-        retaurants,
+        restaurants,
         totalResults,
         totalPages: TOTAL_PAGES(totalResults, 3),
       }
