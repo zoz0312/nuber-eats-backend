@@ -20,6 +20,7 @@ import { Dish } from "./entities/dish.entity";
 import { EditDishInput, EditDishOutput } from "./dtos/edit-dish.dto";
 import { DeleteDishInput, DeleteDishOutput } from "./dtos/delete-dish.dto";
 import { isURL } from "class-validator";
+import { MyRestaurantsInput, MyRestaurantsOutput } from "./dtos/my-restaurants.dto";
 
 @Injectable()
 export class RestaurantService {
@@ -34,6 +35,26 @@ export class RestaurantService {
     return this.restaurants.find();
   }
 
+  async myRestaurants (
+    owner: User,
+    { page }: MyRestaurantsInput,
+  ): Promise<MyRestaurantsOutput> {
+    try {
+      const [restaurants, totalResults] = await this.restaurants.findAllRestaurantsCount(page, { owner });
+
+      return {
+        ok: true,
+        restaurants,
+        totalPages: TOTAL_PAGES(totalResults, 6),
+        totalResults,
+      }
+    } catch (error) {
+      return {
+        ok: false,
+        error
+      }
+    }
+  }
   async createRestaurant (
     owner: User,
     createRestaurantInput: CreateRestaurantInput,
@@ -202,7 +223,7 @@ export class RestaurantService {
       return {
         ok: true,
         results: restaurants,
-        totalPages: TOTAL_PAGES(totalResults, 3),
+        totalPages: TOTAL_PAGES(totalResults, 6),
         totalResults,
       }
     } catch {
@@ -252,7 +273,7 @@ export class RestaurantService {
         ok: true,
         restaurants,
         totalResults,
-        totalPages: TOTAL_PAGES(totalResults, 3),
+        totalPages: TOTAL_PAGES(totalResults, 6),
       }
     } catch {
       return {

@@ -23,7 +23,7 @@ export class RestaurantRepository extends Repository<Restaurant> {
   ):Promise<[Restaurant[], number]> {
     return await this.findAndCount({
       where,
-      ...PAGE_NATION(page, 3),
+      ...PAGE_NATION(page, 6),
       order: {
         isPromoted: 'DESC',
       }
