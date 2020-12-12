@@ -77,16 +77,16 @@ export class PaymentService {
     }
   }
 
-  @Interval(2000)
-  async checkPromotedRestaurants() {
-    const restaurants = await this.restaurants.find({
-      isPromoted: true,
-      promitedUntil: LessThan(new Date()),
-    });
-    restaurants.forEach(async restaurant => {
-      restaurant.isPromoted = false;
-      restaurant.promitedUntil = null;
-      await this.restaurants.save(restaurant);
-    })
-  }
+  // @Interval(2000)
+  // async checkPromotedRestaurants() {
+  //   const restaurants = await this.restaurants.find({
+  //     isPromoted: true,
+  //     promitedUntil: LessThan(new Date()),
+  //   });
+  //   restaurants.forEach(async restaurant => {
+  //     restaurant.isPromoted = false;
+  //     restaurant.promitedUntil = null;
+  //     await this.restaurants.save(restaurant);
+  //   })
+  // }
 }
