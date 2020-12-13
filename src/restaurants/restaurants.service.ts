@@ -21,6 +21,7 @@ import { EditDishInput, EditDishOutput } from "./dtos/edit-dish.dto";
 import { DeleteDishInput, DeleteDishOutput } from "./dtos/delete-dish.dto";
 import { isURL } from "class-validator";
 import { MyRestaurantsInput, MyRestaurantsOutput } from "./dtos/my-restaurants.dto";
+import { MyRestaurantInput, MyRestaurantOutput } from './dtos/my-restaurant.dto';
 
 @Injectable()
 export class RestaurantService {
@@ -55,6 +56,38 @@ export class RestaurantService {
       }
     }
   }
+
+  async myRestaurant (
+    owner: User,
+    { id }: MyRestaurantInput,
+  ): Promise<MyRestaurantOutput> {
+    try {
+      const restaurant = await this.restaurants.findOne({
+        owner,
+        id
+      }, {
+        relations: ['menu', 'orders']
+      });
+
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'Restaurant not found',
+        }
+      }
+
+      return {
+        ok: true,
+        restaurant,
+      }
+    } catch (error) {
+      return {
+        ok: false,
+        error
+      }
+    }
+  }
+
   async createRestaurant (
     owner: User,
     createRestaurantInput: CreateRestaurantInput,
