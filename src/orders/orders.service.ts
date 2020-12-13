@@ -43,6 +43,7 @@ export class OrderService {
 
       let orderFinalPrice = 0;
       const orderItmes: OrderItem[] = [];
+      console.log('items', items)
       for (const { dishId, options } of items) {
         const dish = await this.dishes.findOne(dishId);
         if (!dish) {
@@ -54,23 +55,26 @@ export class OrderService {
 
         let dishFinalPrice = dish.price;
         for (const itemOption of options) {
-          const dishOption = dish.options.find(dishOption => {
-            return dishOption.name === itemOption.name;
-          });
-          if (dishOption) {
-            if (dishOption.extra) {
-              dishFinalPrice += dishOption.extra;
-            } else {
-              const dishOptionChoice = dishOption.choices.find(optionChoice => {
-                return optionChoice.name === itemOption.choice;
-              });
-              if (dishOptionChoice) {
-                if (dishOptionChoice.extra) {
-                  dishFinalPrice += dishOptionChoice.extra;
-                }
-              }
-            }
+          if (itemOption.extra) {
+            dishFinalPrice += itemOption.extra;
           }
+          // const dishOption = dish.options.find(dishOption => {
+          //   return dishOption.name === itemOption.name;
+          // });
+          // if (dishOption) {
+          //   if (dishOption.extra) {
+          //     dishFinalPrice += dishOption.extra;
+          //   } else {
+          //     const dishOptionChoice = dishOption.choices.find(optionChoice => {
+          //       return optionChoice.name === itemOption.choice;
+          //     });
+          //     if (dishOptionChoice) {
+          //       if (dishOptionChoice.extra) {
+          //         dishFinalPrice += dishOptionChoice.extra;
+          //       }
+          //     }
+          //   }
+          // }
         }
         orderFinalPrice += dishFinalPrice;
 
@@ -92,12 +96,14 @@ export class OrderService {
           items: orderItmes,
         })
       );
+
       await this.pubSub.publish(NEW_PNEDING_ORDER, {
         pendingOrders: {
           order,
           ownerId: restaurant.ownerId,
         }
       });
+
       return {
         orderId: order.id,
         ok: true,
