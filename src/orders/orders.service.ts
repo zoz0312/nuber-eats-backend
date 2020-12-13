@@ -42,8 +42,8 @@ export class OrderService {
       }
 
       let orderFinalPrice = 0;
+      let clientFinalPrice = 0;
       const orderItmes: OrderItem[] = [];
-      console.log('items', items)
       for (const { dishId, options } of items) {
         const dish = await this.dishes.findOne(dishId);
         if (!dish) {
@@ -54,29 +54,39 @@ export class OrderService {
         }
 
         let dishFinalPrice = dish.price;
+        clientFinalPrice += dish.price;
+
         for (const itemOption of options) {
           if (itemOption.extra) {
-            dishFinalPrice += itemOption.extra;
+            clientFinalPrice += itemOption.extra;
           }
-          // const dishOption = dish.options.find(dishOption => {
-          //   return dishOption.name === itemOption.name;
-          // });
-          // if (dishOption) {
-          //   if (dishOption.extra) {
-          //     dishFinalPrice += dishOption.extra;
-          //   } else {
-          //     const dishOptionChoice = dishOption.choices.find(optionChoice => {
-          //       return optionChoice.name === itemOption.choice;
-          //     });
-          //     if (dishOptionChoice) {
-          //       if (dishOptionChoice.extra) {
-          //         dishFinalPrice += dishOptionChoice.extra;
-          //       }
-          //     }
-          //   }
-          // }
+
+          const dishOption = dish.options.find(dishOption => {
+            return dishOption.name === itemOption.name;
+          });
+
+          if (dishOption) {
+            dishFinalPrice += dishOption.extra;
+            if (dishOption.choices) {
+              const dishOptionChoice = dishOption.choices.find(optionChoice => {
+                return optionChoice.name === itemOption.choice;
+              });
+              if (dishOptionChoice) {
+                if (dishOptionChoice.extra) {
+                  dishFinalPrice += dishOptionChoice.extra;
+                }
+              }
+            }
+          }
         }
         orderFinalPrice += dishFinalPrice;
+
+        if (dishFinalPrice !== clientFinalPrice) {
+          return {
+            ok: false,
+            error: `Diffrent price total`
+          }
+        }
 
         orderItmes.push(
           await this.orderItems.save(
