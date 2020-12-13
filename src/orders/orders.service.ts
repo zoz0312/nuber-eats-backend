@@ -99,6 +99,7 @@ export class OrderService {
         }
       });
       return {
+        orderId: order.id,
         ok: true,
       }
     } catch {
