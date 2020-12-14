@@ -31,11 +31,11 @@ import { UploadsModule } from './uploads/uploads.module';
       ignoreEnvFile: process.env.NODE_ENV === 'prod',
       validationSchema: Joi.object({
         NODE_ENV: Joi.string().valid('dev', 'prod', 'test').required(),
-        DB_HOST: Joi.string().required(),
-        DB_PORT: Joi.string().required(),
-        DB_USERNAME: Joi.string().required(),
-        DB_DATABASE: Joi.string().required(),
-        DB_PASSWORD: Joi.string().required(),
+        DB_HOST: Joi.string(),
+        DB_PORT: Joi.string(),
+        DB_USERNAME: Joi.string(),
+        DB_DATABASE: Joi.string(),
+        DB_PASSWORD: Joi.string(),
         PRIVATE_KEY: Joi.string().required(),
         MAILGUN_API_KEY: Joi.string().required(),
         MAILGUN_DOMAIN_NAME: Joi.string().required(),
@@ -46,11 +46,16 @@ import { UploadsModule } from './uploads/uploads.module';
     }),
     TypeOrmModule.forRoot({
       type: "postgres",
-      host: process.env.DB_HOST,
-      port: +process.env.DB_PORT,
-      username: process.env.DB_USERNAME,
-      database: process.env.DB_DATABASE,
-      password: process.env.DB_PASSWORD,
+      ...(process.env.DATABASE_URL
+        ? { url: process.env.DATABASE_URL }
+        : {
+          host: process.env.DB_HOST,
+          port: +process.env.DB_PORT,
+          username: process.env.DB_USERNAME,
+          database: process.env.DB_DATABASE,
+          password: process.env.DB_PASSWORD,
+        }
+      ),
       synchronize: process.env.NODE_ENV !== 'prod',
       logging: process.env.NODE_ENV === 'dev',
       entities: [
