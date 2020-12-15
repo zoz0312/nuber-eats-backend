@@ -26,3 +26,35 @@ https://aju-nuber-eats.herokuapp.com/
  - [X] PostgreSQL
  - [X] PostgreSQL
  - [X] Heroku
+
+<hr />
+<br />
+
+## 💡 주요 기능
+각 유저에 맞는 기능
+ - 🙍‍♂Client - 음식을 주문하는 유저의 권한
+ - 👨‍🍳Owner - 식당을 운영하는 가게 주인의 권한
+ - 🛵Driver - 배달하는 분의 권한
+
+### 기능
+ - 로그인/아웃 (JWT 발급)
+ - 유저 권한 체크 (AuthGuard)
+ - GraphQL PubSub (Subscription)
+ - Mail 인증
+ - 유저 (CRU)
+ - 식당 관련
+   - 식당 (CRUD)
+   - 음식 (CRUD)
+   - 카테고리 (CR)
+ - 주문 (CRU)
+ - 결재 (CRU)
+
+<hr />
+
+## 발전 가능한 기능
+강의와 개인적으로 추가한 기능 외의 발전 가능한 기능들 목록입니다.
+
+### 기능
+ - [ ] 실제 Mail 인증 API 연동 (현재는 내 Email만 가능)
+ - [ ] 결재 범용 모듈 추가 (현재는 틀만 존재함)
+ - [ ] 해당 기능 사항들을 관리할 수 있는 Admin Page
