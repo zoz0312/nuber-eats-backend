@@ -56,7 +56,7 @@ import { UploadsModule } from './uploads/uploads.module';
           password: process.env.DB_PASSWORD,
         }
       ),
-      synchronize: process.env.NODE_ENV !== 'production',
+      synchronize: true, // process.env.NODE_ENV !== 'production',
       logging: process.env.NODE_ENV === 'dev',
       entities: [
         User,
@@ -70,7 +70,7 @@ import { UploadsModule } from './uploads/uploads.module';
       ],
     }),
     GraphQLModule.forRoot({
-      // playground: process.env.NODE_ENV !== 'production',
+      playground: true, //process.env.NODE_ENV !== 'production',
       installSubscriptionHandlers: true,
       autoSchemaFile: true,
       context: ({
