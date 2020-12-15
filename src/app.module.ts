@@ -70,7 +70,8 @@ import { UploadsModule } from './uploads/uploads.module';
       ],
     }),
     GraphQLModule.forRoot({
-      playground: true, //process.env.NODE_ENV !== 'production',
+      playground: process.env.NODE_ENV !== 'production',
+      introspection : process.env.NODE_ENV !== 'production',
       installSubscriptionHandlers: true,
       autoSchemaFile: true,
       context: ({
