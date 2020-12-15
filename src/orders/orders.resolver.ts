@@ -59,16 +59,6 @@ export class OrderResolver {
     return this.ordersService.editOrder(user, editOrderInput);
   }
 
-  @Mutation(returns => Boolean)
-  async potatoReady(
-    @Args('potatoId') potatoId: number,
-  ) {
-    await this.pubSub.publish('testPubSub', {
-      readyPotato: potatoId,
-    })
-    return true;
-  }
-
   @Role(['Owner'])
   @Subscription(returns => Order, {
     filter: ({ pendingOrders: { ownerId } }, _, { user }) => {
