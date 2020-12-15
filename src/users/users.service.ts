@@ -47,7 +47,7 @@ export class UsersService {
     } catch (e) {
       return {
         ok: false,
-        error: `Couldn't create account`
+        error: `Couldn't create account ${e}`
       };
     }
   }
