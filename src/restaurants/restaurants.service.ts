@@ -22,6 +22,7 @@ import { DeleteDishInput, DeleteDishOutput } from "./dtos/delete-dish.dto";
 import { isURL } from "class-validator";
 import { MyRestaurantsInput, MyRestaurantsOutput } from "./dtos/my-restaurants.dto";
 import { MyRestaurantInput, MyRestaurantOutput } from './dtos/my-restaurant.dto';
+import { DishInput, DishOutput } from "./dtos/dish.dto";
 
 @Injectable()
 export class RestaurantService {
@@ -316,6 +317,34 @@ export class RestaurantService {
       };
     }
   }
+
+  async findDishById(
+    owner: User,
+    { id }: DishInput,
+  ): Promise<DishOutput> {
+    try {
+      const dish = await this.dishes.findOne({
+        where: { id },
+        relations: ['restaurant']
+      });
+
+      if (owner.id !== dish.restaurant.ownerId) {
+        return {
+          ok: false,
+          error: `접근 권한이 없습니다.`
+        }
+      }
+
+      return {
+        ok: true,
+        dish,
+      }
+    } catch (e) {
+      return {
+        ok: false,
+      }
+    }
+  };
 
   async createDish(
     owner: User,
