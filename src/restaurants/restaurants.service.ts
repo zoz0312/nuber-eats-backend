@@ -64,10 +64,11 @@ export class RestaurantService {
   ): Promise<MyRestaurantOutput> {
     try {
       const restaurant = await this.restaurants.findOne({
-        owner,
-        id
-      }, {
-        relations: ['menu', 'orders']
+        relations: ['menu', 'orders'],
+        where: {
+          owner,
+          id
+        }
       });
 
       if (!restaurant) {
@@ -76,6 +77,12 @@ export class RestaurantService {
           error: 'Restaurant not found',
         }
       }
+
+      restaurant.menu = restaurant.menu.filter(menu => {
+        if (!menu.deletedAt) {
+          return menu
+        }
+      })
 
       return {
         ok: true,

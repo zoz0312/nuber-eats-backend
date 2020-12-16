@@ -63,6 +63,7 @@ export class Restaurant extends CoreEntity {
   @OneToMany(
     type => Dish,
     dish => dish.restaurant,
+    { onDelete: 'CASCADE' }
   )
   menu: Dish[];
 
