@@ -5,7 +5,7 @@ import { Dish } from "../entities/dish.entity";
 @InputType()
 export class EditDishInput extends PickType(
   PartialType(Dish),
-  ['name', 'options', 'price', 'description']
+  ['name', 'options', 'price', 'description', 'photo']
 ) {
   @Field(type => Int)
   dishId: number;
