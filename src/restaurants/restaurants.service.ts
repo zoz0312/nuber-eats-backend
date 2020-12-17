@@ -361,12 +361,14 @@ export class RestaurantService {
       const restaurant = await this.restaurants.findOne(
         createDishInput.restaurantId
       );
+
       if (!restaurant) {
         return {
           ok: false,
           error: 'Restaurant not found',
         };
       }
+
       if (owner.id !== restaurant.ownerId) {
         return {
           ok: false,
