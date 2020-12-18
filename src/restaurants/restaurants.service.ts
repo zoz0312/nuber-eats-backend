@@ -23,6 +23,7 @@ import { isURL } from "class-validator";
 import { MyRestaurantsInput, MyRestaurantsOutput } from "./dtos/my-restaurants.dto";
 import { MyRestaurantInput, MyRestaurantOutput } from './dtos/my-restaurant.dto';
 import { DishInput, DishOutput } from "./dtos/dish.dto";
+import { EditCategoryInput, EditCategoryOutput } from "./dtos/edit-category.dto";
 
 @Injectable()
 export class RestaurantService {
@@ -82,7 +83,7 @@ export class RestaurantService {
         if (!menu.deletedAt) {
           return menu
         }
-      })
+      });
 
       return {
         ok: true,
@@ -255,6 +256,45 @@ export class RestaurantService {
     }
   }
 
+  async editCategory(
+    category: EditCategoryInput
+  ): Promise<EditCategoryOutput> {
+    try {
+      let name: string = '';
+      let slug: string = '';
+      let coverImage: string = '';
+
+      if (category.name) {
+        const {
+          categoryName,
+          categorySlug,
+        } = this.categories.categoryNamesSlug(category.name);
+        name = categoryName;
+        slug = categorySlug;
+      }
+
+      if (category.coverImage) {
+        coverImage = category.coverImage
+      }
+
+      await this.categories.save([{
+        id: category.categoryId,
+        ...(name && { name }),
+        ...(slug && { slug }),
+        ...(coverImage && { coverImage }),
+      }]);
+
+      return {
+        ok: true
+      }
+    } catch {
+      return {
+        ok: false,
+        error: `수정할 수 없습니다.`,
+      }
+    }
+  }
+
   async allRestaurants(
     { page }: RestaurantsInput,
   ): Promise<RestaurantsOutput> {
@@ -284,12 +324,20 @@ export class RestaurantService {
         restaurantId,
         { relations: ['menu'] },
       );
+
       if (!restaurant) {
         return {
           ok: false,
           error: 'Not found restaurant',
         }
       }
+
+      restaurant.menu = restaurant.menu.filter(menu => {
+        if (!menu.deletedAt) {
+          return menu
+        }
+      })
+
       return {
         ok: true,
         restaurant,
