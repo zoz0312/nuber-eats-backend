@@ -9,6 +9,7 @@ import { CreateRestaurantInput, CreateRestaurantOutput } from "./dtos/create-res
 import { DeleteDishInput, DeleteDishOutput } from "./dtos/delete-dish.dto";
 import { DeleteRestaurantInput, DeleteRestaurantOutput } from "./dtos/delete-restaurant.dto";
 import { DishInput, DishOutput } from "./dtos/dish.dto";
+import { EditCategoryInput, EditCategoryOutput } from "./dtos/edit-category.dto";
 import { EditDishInput, EditDishOutput } from "./dtos/edit-dish.dto";
 import { EditRestaurantInput, EditRestaurantOutput } from "./dtos/edit-restaurant.dto";
 import { MyRestaurantInput, MyRestaurantOutput } from "./dtos/my-restaurant.dto";
@@ -131,6 +132,14 @@ export class CategoryResolver {
     @Args('input') categoryInput: CategoryInput,
   ): Promise<CategoryOutput> {
     return this.restaurantService.findCategoryBySlug(categoryInput);
+  }
+
+  @Mutation(type => EditCategoryOutput)
+  @Role(['Owner'])
+  editCategory(
+    @Args('input') category: EditCategoryInput,
+  ): Promise<EditCategoryOutput> {
+    return this.restaurantService.editCategory(category);
   }
 }
 

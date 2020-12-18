@@ -4,8 +4,7 @@ import { Category } from "../entities/category.entity";
 @EntityRepository(Category)
 export class CategoryRepository extends Repository<Category> {
   async getOrCreate(name: string): Promise<Category> {
-    const categoryName = name.trim().toLowerCase();
-    const categorySlug = categoryName.replace(/ /gi,'-');
+    const { categoryName, categorySlug } = this.categoryNamesSlug(name);
     let category = await this.findOne({ slug: categorySlug });
 
     if (!category) {
@@ -17,5 +16,17 @@ export class CategoryRepository extends Repository<Category> {
       );
     }
     return category;
+  }
+
+  categoryNamesSlug(name: string): {
+    categoryName: string;
+    categorySlug: string;
+  } {
+    const categoryName = name.trim().toLowerCase();
+    const categorySlug = categoryName.replace(/ /gi,'-');
+    return {
+      categoryName,
+      categorySlug,
+    }
   }
 }
